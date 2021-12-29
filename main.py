@@ -1,5 +1,7 @@
 import asyncio
 from config import CHAT_HOST, CHAT_PORT
+import datetime
+import aiofiles
 
 
 async def tcp_echo_client(host, port):
@@ -9,7 +11,12 @@ async def tcp_echo_client(host, port):
     try:
         while True:
             data = await reader.read(100)
-            print(f'Received: {data.decode()!r}')
+            now = datetime.datetime.now()
+            formatted_date = now.strftime("%d.%m.%Y %H:%M")
+            message = f'[{formatted_date}] {data.decode()!r}'
+            print(message)
+            async with aiofiles.open('test.txt', mode='a') as f:
+                await f.write(message)
     finally:
         print('Close the connection')
         writer.close()
