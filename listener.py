@@ -11,10 +11,10 @@ async def tcp_echo_client(host, port, filepath):
         host, port)
     try:
         while True:
-            data = await reader.read(100)
+            data = await reader.readline()
             now = datetime.datetime.now()
             formatted_date = now.strftime("%d.%m.%Y %H:%M")
-            message = f'[{formatted_date}] {data.decode()!r}'
+            message = f'[{formatted_date}] {data.decode("utf-8")}'
             print(message)
             async with aiofiles.open(filepath, mode='a') as f:
                 await f.write(message)
