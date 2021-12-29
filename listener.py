@@ -3,10 +3,14 @@ from config import CHAT_HOST, CHAT_PORT, HISTORY_PATH
 import datetime
 import aiofiles
 import argparse
+import logging
 
+
+logging.basicConfig(level=logging.DEBUG)
+
+logger = logging.getLogger('lISTENER')
 
 async def tcp_echo_client(host, port, filepath):
-    print(host)
     reader, writer = await asyncio.open_connection(
         host, port)
     try:
@@ -15,11 +19,11 @@ async def tcp_echo_client(host, port, filepath):
             now = datetime.datetime.now()
             formatted_date = now.strftime("%d.%m.%Y %H:%M")
             message = f'[{formatted_date}] {data.decode("utf-8")}'
-            print(message)
+            logger.debug(message)
             async with aiofiles.open(filepath, mode='a') as f:
                 await f.write(message)
     finally:
-        print('Close the connection')
+        logger.debug('Close the connection')
         writer.close()
 
 
