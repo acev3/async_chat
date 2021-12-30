@@ -7,8 +7,7 @@ import json
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('SENDER')
 
-async def tcp_echo_client(chat_host, chat_port, message):
-    ACCOUNT_HASH = '123'
+async def submit_message(chat_host, chat_port, message):
     reader, writer = await asyncio.open_connection(
             chat_host, chat_port)
     response = await reader.readline()
@@ -34,6 +33,39 @@ async def tcp_echo_client(chat_host, chat_port, message):
     writer.close()
 
 
+async def register(chat_host, chat_port, nickname):
+    logger.debug("Registration")
+    reader, writer = await asyncio.open_connection(
+            chat_host, chat_port)
+    response = await reader.readline()
+    logger.debug(response)
+    writer.write("\n".encode("utf-8"))
+    await writer.drain()
+    response = await reader.readline()
+    logger.debug(response)
+    response_decode = response.decode('utf8').replace("'", '"')
+    nickname = "{}\n\n".format(nickname)
+    logger.debug(f'Send nickname: {nickname}')
+    writer.write(nickname.encode("utf-8"))
+    await writer.drain()
+    response = await reader.readline()
+    logger.debug(response)
+    response_decode = response.decode('utf8').replace("'", '"')
+    user_info = json.loads(response_decode)
+    logger .debug('Close the connection')
+    writer.close()
+    return user_info['nickname'], user_info['account_hash']
+
+
+async def authorise(chat_host, chat_port, nickname, message):
+    nick, hash = await register(chat_host, chat_port, nickname)
+    logger.debug("Authorization")
+    reader, writer = await asyncio.open_connection(
+            chat_host, chat_port)
+    await submit_message(chat_host, chat_port, message)
+
+
 if __name__ == '__main__':
     message = input()
-    asyncio.run(tcp_echo_client(CHAT_HOST, SENDER_PORT, message))
+    asyncio.run(register(CHAT_HOST, SENDER_PORT,message))
+    #asyncio.run(submit_message(CHAT_HOST, SENDER_PORT, message))
