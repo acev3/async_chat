@@ -8,6 +8,10 @@ import aiofiles
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('SENDER')
 
+
+def sanitize(message):
+    return "{}".format(str(message).replace("\n", " "))
+
 async def submit_message(chat_host, chat_port, message):
     reader, writer = await asyncio.open_connection(
             chat_host, chat_port)
@@ -26,6 +30,8 @@ async def submit_message(chat_host, chat_port, message):
         if json.loads(check_token) is None:
             logger.debug('Неизвестный токен. Проверьте его или зарегистрируйте заново.')
             break
+        message = sanitize(message)
+        logger.debug(f'San message {message}')
         message = "{}\n\n".format(message)
         logger.debug(f'Send: {message}')
         writer.write(message.encode('utf-8'))
@@ -82,8 +88,8 @@ async def authorise(chat_host, chat_port, ACCOUNT_HASH):
 
 
 if __name__ == '__main__':
-    #message = input()
-    nickname = input()
-    asyncio.run(authorise(CHAT_HOST, SENDER_PORT, ACCOUNT_HASH))
-    #asyncio.run(submit_message(CHAT_HOST, SENDER_PORT, message))
+    message = "123 \n\n"
+    #nickname = input()
+    #asyncio.run(authorise(CHAT_HOST, SENDER_PORT, ACCOUNT_HASH))
+    asyncio.run(submit_message(CHAT_HOST, SENDER_PORT, message))
     #asyncio.run(register(CHAT_HOST, SENDER_PORT, nickname))
