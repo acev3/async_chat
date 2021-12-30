@@ -2,6 +2,7 @@ import asyncio
 from config import CHAT_HOST, SENDER_PORT, ACCOUNT_HASH
 import logging
 import json
+import aiofiles
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -33,7 +34,7 @@ async def submit_message(chat_host, chat_port, message):
     writer.close()
 
 
-async def register(chat_host, chat_port, nickname):
+async def register(chat_host, chat_port, nickname, path_to_keys='keys.json'):
     logger.debug("Registration")
     reader, writer = await asyncio.open_connection(
             chat_host, chat_port)
@@ -54,18 +55,35 @@ async def register(chat_host, chat_port, nickname):
     user_info = json.loads(response_decode)
     logger .debug('Close the connection')
     writer.close()
+    async with aiofiles.open(path_to_keys, mode='a') as f:
+        await f.write("{}:{}\n".format(user_info['nickname'], user_info['account_hash']))
     return user_info['nickname'], user_info['account_hash']
 
 
-async def authorise(chat_host, chat_port, nickname, message):
-    nick, hash = await register(chat_host, chat_port, nickname)
+async def authorise(chat_host, chat_port, ACCOUNT_HASH):
     logger.debug("Authorization")
     reader, writer = await asyncio.open_connection(
             chat_host, chat_port)
-    await submit_message(chat_host, chat_port, message)
+    response = await reader.readline()
+    logger.debug(response)
+    logger.debug(f'Send: token')
+    token = "{}\n\n".format(ACCOUNT_HASH)
+    writer.write(token.encode("utf-8"))
+    await writer.drain()
+    response = await reader.readline()
+    logger.debug(response)
+    response = await reader.readline()
+    logger.debug(response)
+    logger.debug('Close the connection')
+    writer.close()
+
+    
+    
 
 
 if __name__ == '__main__':
-    message = input()
-    asyncio.run(register(CHAT_HOST, SENDER_PORT,message))
+    #message = input()
+    nickname = input()
+    asyncio.run(authorise(CHAT_HOST, SENDER_PORT, ACCOUNT_HASH))
     #asyncio.run(submit_message(CHAT_HOST, SENDER_PORT, message))
+    #asyncio.run(register(CHAT_HOST, SENDER_PORT, nickname))
