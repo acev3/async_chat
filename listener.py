@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('lISTENER')
 
 
-async def tcp_echo_client(host, port, filepath):
+async def listen_chat(host, port, filepath):
     reader, writer = await asyncio.open_connection(
         host, port)
     try:
@@ -36,4 +36,4 @@ if __name__ == '__main__':
     chat_host =  args.host or CHAT_HOST
     chat_port = args.port or CHAT_PORT
     history_path = args.history or HISTORY_PATH
-    asyncio.run(tcp_echo_client(chat_host, chat_port, history_path))
+    asyncio.run(listen_chat(chat_host, chat_port, history_path))
