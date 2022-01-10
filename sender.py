@@ -83,15 +83,15 @@ async def authorise(chat_host, chat_port, ACCOUNT_HASH):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--host', type=str, help='Set host')
-    parser.add_argument('--port', type=int, help='Set port')
-    parser.add_argument('--token', type=str, help='Set token')
-    parser.add_argument('--username', type=str, help='Set username')
+    parser.add_argument('--host', type=str, help='Set host', default=CHAT_HOST)
+    parser.add_argument('--port', type=int, help='Set port', default=SENDER_PORT)
+    parser.add_argument('--token', type=str, help='Set token', default=ACCOUNT_HASH)
+    parser.add_argument('--username', type=str, help='Set username', default=USERNAME)
     parser.add_argument('--message', type=str, help='Set message', required=True)
     args = parser.parse_args()
-    chat_host =  args.host or CHAT_HOST
-    chat_port = args.port or SENDER_PORT
-    token = args.token or ACCOUNT_HASH
-    username = args.username or USERNAME
+    chat_host =  args.host
+    chat_port = args.port
+    token = args.token
+    username = args.username
     message = args.message
     asyncio.run(submit_message(CHAT_HOST, SENDER_PORT, message, token))
