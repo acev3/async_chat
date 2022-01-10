@@ -14,8 +14,8 @@ def sanitize(message):
     return str(message).replace('\n', ' ')
 
 
-async def submit_message(chat_host, chat_port, message, ACCOUNT_HASH):
-    reader, writer = await authorise(chat_host, chat_port, ACCOUNT_HASH)
+async def submit_message(chat_host, chat_port, message, account_hash):
+    reader, writer = await authorise(chat_host, chat_port, account_hash)
     response = await reader.readline()
     logger.debug(response)
     response = await reader.readline()
@@ -61,14 +61,14 @@ async def register(chat_host, chat_port, nickname, path_to_keys='keys.json'):
     return user_info['nickname'], user_info['account_hash']
 
 
-async def authorise(chat_host, chat_port, ACCOUNT_HASH):
+async def authorise(chat_host, chat_port, account_hash):
     logger.debug('Authorization')
     reader, writer = await asyncio.open_connection(
             chat_host, chat_port)
     response = await reader.readline()
     logger.debug(response)
     logger.debug(f'Send: token')
-    token = '{}\n\n'.format(ACCOUNT_HASH)
+    token = '{}\n\n'.format(account_hash)
     writer.write(token.encode('utf-8'))
     await writer.drain()
     response = await reader.readline()
