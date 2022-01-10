@@ -21,13 +21,12 @@ async def submit_message(chat_host, chat_port, message, ACCOUNT_HASH):
     response = await reader.readline()
     logger.debug(response)
     try:
-        while True:
-            message = sanitize(message)
-            logger.debug(f'San message {message}')
-            message = '{}\n\n'.format(message)
-            logger.debug(f'Send: {message}')
-            writer.write(message.encode('utf-8'))
-            await writer.drain()
+        message = sanitize(message)
+        logger.debug(f'San message {message}')
+        message = '{}\n\n'.format(message)
+        logger.debug(f'Send: {message}')
+        writer.write(message.encode('utf-8'))
+        await writer.drain()
     except asyncio.CancelledError:
         logger.debug('Client was disconnected')
         raise
