@@ -54,10 +54,11 @@ async def register(chat_host, chat_port, nickname, path_to_keys='keys.json'):
     logger.debug(response)
     response_decode = response.decode('utf8').replace("'", '"')
     user_info = json.loads(response_decode)
-    logger .debug('Close the connection')
+    logger.debug('Close the connection')
     writer.close()
     async with aiofiles.open(path_to_keys, mode='a') as f:
         await f.write('{}:{}\n'.format(user_info['nickname'], user_info['account_hash']))
+    logger.info('Your username: {} ; your hash: {}'.format(user_info['nickname'], user_info['account_hash']))
     return user_info['nickname'], user_info['account_hash']
 
 
@@ -86,7 +87,7 @@ if __name__ == '__main__':
     parser.add_argument('--host', type=str, help='Set host', default=CHAT_HOST)
     parser.add_argument('--port', type=int, help='Set port', default=SENDER_PORT)
     parser.add_argument('--token', type=str, help='Set token', default=ACCOUNT_HASH)
-    parser.add_argument('--username', type=str, help='Set username', default=USERNAME)
+    parser.add_argument('--username', type=str, help='Set username')
     parser.add_argument('--message', type=str, help='Set message', required=True)
     args = parser.parse_args()
     chat_host =  args.host
@@ -94,4 +95,7 @@ if __name__ == '__main__':
     token = args.token
     username = args.username
     message = args.message
-    asyncio.run(submit_message(CHAT_HOST, SENDER_PORT, message, token))
+    if username:
+        asyncio.run(register(CHAT_HOST, SENDER_PORT, username))
+    else:
+        asyncio.run(submit_message(CHAT_HOST, SENDER_PORT, message, token))
