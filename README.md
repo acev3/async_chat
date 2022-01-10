@@ -37,6 +37,15 @@ python sender.py <MESSAGE>, MESSAGE - обзательный аргумент.
   --username USERNAME  Set username
   --message MESSAGE    Set message
 ```
+Чтобы зарегистрировать пользователя
+```bash
+python sender.py --message <MESSAGE> --username <USERNAME>
+```
+В результате будет выведен ответ вида:
+```bash
+INFO:SENDER:Your username: <Username> ; your hash: <hash>
+```
+Эти параметры можно передать для отправки сообщения или поместить в .env файл.
 
 # Цели проекта
 
