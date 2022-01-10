@@ -29,11 +29,11 @@ async def listen_chat(host, port, filepath):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--host', type=str, help='Set host')
-    parser.add_argument('--port', type=int, help='Set port')
-    parser.add_argument('--history', type=str, help='Set history path')
+    parser.add_argument('--host', type=str, help='Set host', default=CHAT_HOST)
+    parser.add_argument('--port', type=int, help='Set port', default=CHAT_PORT)
+    parser.add_argument('--history', type=str, help='Set history path', default=HISTORY_PATH)
     args = parser.parse_args()
-    chat_host =  args.host or CHAT_HOST
-    chat_port = args.port or CHAT_PORT
-    history_path = args.history or HISTORY_PATH
+    chat_host =  args.host
+    chat_port = args.port
+    history_path = args.history
     asyncio.run(listen_chat(chat_host, chat_port, history_path))
