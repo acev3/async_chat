@@ -11,7 +11,7 @@ logger = logging.getLogger('SENDER')
 
 
 def sanitize(message):
-    return '{}'.format(str(message).replace('\n', ' '))
+    return str(message).replace('\n', ' ')
 
 
 async def submit_message(chat_host, chat_port, message, ACCOUNT_HASH):
